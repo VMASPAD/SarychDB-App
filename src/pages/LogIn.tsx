@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -14,7 +13,7 @@ import { checkUser } from "@/lib/operations"
 import { useState } from "react"
 import { useNavigate } from "react-router"
 import { motion } from "framer-motion"
-import { Database, Loader2, AlertCircle } from "lucide-react"
+import { Loader2, AlertCircle } from "lucide-react"
 
 export default function LogIn() {
   const [loginUser, setLoginUser] = useState("");

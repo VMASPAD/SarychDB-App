@@ -1,4 +1,3 @@
-import React from 'react'
 import { AnimatedThemeToggler } from './ui/animated-theme-toggler'
 import {
   Dialog,

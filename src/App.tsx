@@ -1,5 +1,4 @@
 import "./App.css";
-import LaserFlow from "./components/LaserFlow";
 import DataBases from "./pages/DataBases";
 import LogIn from "./pages/LogIn";
 
