@@ -9,6 +9,7 @@ import LaserFlow from "./components/LaserFlow";
 import ViewData from "./pages/ViewData";
 import DataBases from "./pages/DataBases";
 import { Toaster } from "sonner";
+import { getApiBaseUrl } from "@/lib/operations";
 
 // Componente para manejar el estado dinámico
 function DynamicApp() {
@@ -17,11 +18,18 @@ function DynamicApp() {
   );
   useEffect(() => {
     const checkServerHealth = () => {
-      fetch(`http://localhost:3030/health`)
-        .then((response) => response.json())
+      fetch(`${getApiBaseUrl()}/health`)
+        .then(async (response) => {
+          const payload = await response.json().catch(() => null);
+          const isHealthy =
+            response.ok &&
+            !(payload && typeof payload === "object" && "error" in payload);
+
+          return isHealthy;
+        })
         .then((data) => {
-          setServerStatus(data.status === "ok");
-          localStorage.setItem("statusServer", data.status === "ok" ? "true" : "false");
+          setServerStatus(data);
+          localStorage.setItem("statusServer", data ? "true" : "false");
         })
         .catch((error) => {
           console.error("Error checking server health:", error);
