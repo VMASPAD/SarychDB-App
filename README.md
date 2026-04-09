@@ -7,7 +7,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?style=for-the-badge&logo=typescript)
 ![Tauri](https://img.shields.io/badge/Tauri-2+-FFC131?style=for-the-badge&logo=tauri)
 
-**A modern desktop application for managing SarychDB databases**
+**A modern desktop and web application for managing SarychDB databases**
 
 Similar to MongoDB Compass, but for SarychDB
 
@@ -23,6 +23,8 @@ Similar to MongoDB Compass, but for SarychDB
 - 📝 **Complete CRUD**: Create, Read, Update, and Delete documents
 - 🔍 **Real-time Search**: Filter documents instantly
 - 📊 **Statistics**: View database metrics
+- 🌐 **Web + App Modes**: Single codebase for browser deployments and Tauri desktop
+- 🔁 **REST vNext Ready**: Uses SarychDB REST API endpoints and protocol bridge
 - 🎨 **Modern UI**: Professional interface with light/dark theme
 - ⚡ **High Performance**: Lazy loading and optimized pagination
 - 🔐 **Secure**: Safe credential management
@@ -32,8 +34,14 @@ Similar to MongoDB Compass, but for SarychDB
 ## 🚀 Getting Started
 
 ### Prerequisites
-- SarychDB server running
+- SarychDB server running in REST mode
 - Valid access credentials
+
+Example start command:
+
+```bash
+cargo run -- --rest --port 4040
+```
 
 ### Installation
 
@@ -77,7 +85,7 @@ npm run tauri build
 - **UI Components**: Shadcn/ui + Tailwind CSS
 - **Animations**: Framer Motion
 - **Desktop**: Tauri 2
-- **Client**: sarychdb-client
+- **Data Layer**: Native fetch HTTP client (REST + /sarych compatibility bridge)
 - **Editor**: Monaco Editor (JSON)
 - **Notifications**: Sonner
 
@@ -133,7 +141,32 @@ sarychdb-app/
 
 ## 🔧 API Operations
 
-La aplicación utiliza todas las funciones disponibles de SarychDB:
+La aplicación utiliza la API REST de SarychDB y, para operaciones avanzadas de actualización/borrado, usa el bridge de compatibilidad `/sarych`.
+
+### Runtime Modes and API URL Resolution
+
+El frontend selecciona automáticamente la URL base de la API con este orden de prioridad:
+
+1. `VITE_SARYCHDB_API_URL`
+2. `localStorage["sarychdbApiBaseUrl"]`
+3. Modo App (Tauri): `http://127.0.0.1:4040`
+4. Modo Web: `window.location.origin`
+
+Esto permite desplegar solo frontend web y consumir la API en el mismo host del despliegue sin cambios de código.
+
+### Endpoint Mapping
+
+- `GET /health` para estado del servidor
+- `POST /api/users` para crear usuario
+- `POST /api/databases` para crear base de datos
+- `GET /api/databases` para listar bases
+- `GET /api/databases/{db}/stats` para estadísticas
+- `GET /api/databases/{db}/browse` para paginación simple
+- `GET /api/databases/{db}/list` para filtros/sort/paginación avanzada
+- `GET/POST /api/databases/{db}/records` para búsqueda/inserción
+- `POST /sarych` para compatibilidad de operaciones tipo protocolo
+
+### Frontend Operations
 
 ```typescript
 // Bases de datos
@@ -159,6 +192,10 @@ La aplicación utiliza todas las funciones disponibles de SarychDB:
 - createUser()
 - logout()
 ```
+
+### Health Check
+
+El chequeo de salud visual de la UI usa `${getApiBaseUrl()}/health` y actualiza el estado del fondo en tiempo real.
 
 ---
 
